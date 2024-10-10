@@ -1,0 +1,22 @@
+defaults: 
+  - model_defaults # Inherit model_defaults arguments
+
+# --------------------------
+#         Model
+# --------------------------
+model: 'cbm' # Model's name (to indicate it's a baseline)
+tag: 'baseline' # Model's tag for wandb logging
+concept_learning: 'autoregressive' # Autoregressive CBM baseline                      
+
+# --------------------------
+#         Policy
+# --------------------------
+inter_policy: 'random,prob_unc' # Comma-separated intervention policies to determine which concept to intervene. Combinable options: ['random','prob_unc']
+inter_strategy: 'hard' # Interventions are performed by setting the concept to 0 or 1
+
+# --------------------------
+#         Training
+# --------------------------
+training_mode: 'independent' # Optimization method of ARs is independent training                         
+pretrain_concepts: True # Whether to pretrain the concepts predictors in AR [True, False]
+p_epochs: 50 # Number of epochs to pretrain the concept predictors in AR

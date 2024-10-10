@@ -1,0 +1,55 @@
+#!/bin/bash
+
+eval "$(conda shell.bash hook)"
+export CUBLAS_WORKSPACE_CONFIG=":4096:8"
+export LIBRARY_PATH="/usr/local/cuda/lib64/stubs:$LIBRARY_PATH"
+export LDFLAGS=-L/usr/local/cuda/lib64/stub
+
+
+tag='SCBM_experiments'
+for i in 42 73 666 777 1009 1279 1597 1811 1949 2053
+do
+  ### Synthetic data
+  data='synthetic'
+  mem='20G'
+  encoder_arch='FCNN'
+
+  # Baselines
+  for model in 'AR' 'CEM' 'CBM'
+  do
+    sbatch --mem=$mem train.sh +model=$model +data=$data experiment_name="${data}_${model}_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch model.j_epochs=150 model.c_epochs=100 model.t_epochs=50
+  done;
+  
+  # SCBM
+  sbatch --mem=$mem train.sh +model=SCBM +data=$data model.cov_type='amortized' model.reg_precision='l1' model.reg_weight=1 experiment_name="${data}_SCBM_amortized_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch model.j_epochs=150 model.c_epochs=100 model.t_epochs=50
+  sbatch --mem=$mem train.sh +model=SCBM +data=$data model.cov_type='global' model.reg_precision=None experiment_name="${data}_SCBM_global_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch model.j_epochs=150 model.c_epochs=100 model.t_epochs=50
+
+  ### CUB data
+  data='CUB'
+  encoder_arch='resnet18'
+
+  # Baselines
+  for model in 'AR' 'CEM' 'CBM'
+  do
+    sbatch --mem=$mem train.sh +model=$model +data=$data experiment_name="${data}_${model}_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch
+  done;
+  
+  # SCBM
+  sbatch --mem=$mem train.sh +model=SCBM +data=$data model.cov_type='amortized' model.reg_precision='l1' model.reg_weight=1 experiment_name="${data}_SCBM_amortized_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch
+  sbatch --mem=$mem train.sh +model=SCBM +data=$data model.cov_type='global' model.reg_precision=None experiment_name="${data}_SCBM_global_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch
+
+  ### CIFAR10 data
+  data='cifar10'
+  encoder_arch='simple_CNN'
+  mem='100G'
+
+  # Baselines
+  for model in 'AR' 'CEM' 'CBM'
+  do
+    sbatch --mem=$mem train.sh +model=$model +data=$data experiment_name="${data}_${model}_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch
+  done;
+  
+  # SCBM
+  sbatch --mem=$mem train.sh +model=SCBM +data=$data model.cov_type='amortized' model.reg_precision='l1' model.reg_weight=1 experiment_name="${data}_SCBM_amortized_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch
+  sbatch --mem=$mem train.sh +model=SCBM +data=$data model.cov_type='global' model.reg_precision=None experiment_name="${data}_SCBM_global_${i}" seed=$i logging.project=SCBM logging.mode=offline model.tag=$tag model.encoder_arch=$encoder_arch
+done;

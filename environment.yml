@@ -1,0 +1,19 @@
+name: scbm
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - pytorch
+  - pytorch-cuda=12.1
+  - torchvision
+  - wandb
+  - scikit-learn
+  - tqdm
+  - torchmetrics
+  - matplotlib
+  - conda-forge::hydra-core
+  - plotly
+  - anaconda::seaborn
+  - transformers=4.37.2

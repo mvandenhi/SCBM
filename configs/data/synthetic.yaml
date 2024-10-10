@@ -1,0 +1,11 @@
+# --------------------------
+#         Dataset
+# --------------------------
+defaults:
+  - data_defaults # Inherit data_defaults arguments
+dataset: 'synthetic' # Name of the dataset 
+sim_type: 'correlated_c' # Name of the simulation
+num_classes: 2 # Binary classification problem
+num_concepts: 100 # Number of concepts
+num_covariates: 1500 # Number of covariates per data point
+num_points: 50000 # Number of data points

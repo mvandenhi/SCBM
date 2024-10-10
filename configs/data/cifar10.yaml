@@ -1,0 +1,8 @@
+# --------------------------
+#         Dataset
+# --------------------------
+defaults:
+  - data_defaults # Inherit data_defaults arguments
+dataset: 'cifar10' # Name of the dataset 
+num_classes: 10 # Number of classes of the target variable
+num_concepts: 143 # Number of concepts in dataset
