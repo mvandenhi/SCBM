@@ -214,7 +214,7 @@ class CUB_DatasetGenerator(Dataset):
             img_path = img_data["img_path"] 
             image_data = Image.open(img_path).convert("RGB") 
             image_label = img_data["class_label"] 
-            image_attr = np.array(img_data["attribute_label"])
+            image_attr = np.array(img_data["attribute_label"], dtype=np.float32)
             
             if self.cache:
                 self._cache_image(index, image_data, image_attr, image_label)
