@@ -114,13 +114,13 @@ def _build_constr(constr, x0):
 
 def _check_bound(val, x0):
     if isinstance(val, numbers.Number):
-        return np.full(x0.numel(), val)
+        return np.full(x0.numel(), val, dtype=np.float64)
     elif isinstance(val, torch.Tensor):
         assert val.numel() == x0.numel()
-        return val.detach().cpu().numpy().flatten()
+        return val.detach().cpu().numpy().flatten().astype(np.float64)
     elif isinstance(val, np.ndarray):
         assert val.size == x0.numel()
-        return val.flatten()
+        return val.flatten().astype(np.float64)
     else:
         raise ValueError("Bound value has unrecognized format.")
 
@@ -266,7 +266,7 @@ def minimize_constr(
             x = to_tensor(x)
             fval = f(x)
             grad = jacobian(x)
-            return fval.cpu().numpy(), grad.cpu().numpy()
+            return fval.cpu().numpy().astype(np.float64), grad.cpu().numpy().astype(np.float64)
 
     else:
         f_with_jac, f_hess = _build_obj(f, x0)
@@ -278,7 +278,7 @@ def minimize_constr(
         constraints = []
 
     # optimize
-    x0_np = x0.float().cpu().numpy().flatten().copy()
+    x0_np = x0.double().cpu().numpy().flatten().copy()
     method = kwargs.pop("method")
     if method == "trust-constr":
         result = minimize_scipy(
@@ -308,8 +308,8 @@ def minimize_constr(
             )
         original_fun = constr["fun"]
         original_jac = constr["jac"]
-        constr["fun"] = lambda x: original_fun(torch.tensor(x).float()).cpu().numpy()
-        constr["jac"] = lambda x: original_jac(torch.tensor(x).float()).cpu().numpy()
+        constr["fun"] = lambda x: original_fun(torch.tensor(x).float()).cpu().numpy().astype(np.float64)
+        constr["jac"] = lambda x: original_jac(torch.tensor(x).float()).cpu().numpy().astype(np.float64)
         with warnings.catch_warnings():
             warnings.filterwarnings(
                 "ignore",
