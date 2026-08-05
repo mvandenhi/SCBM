@@ -617,7 +617,7 @@ class RandomSubsetInterventionPolicy:
             torch.Tensor: An updated tensor with one additional masked concept.
                           Shape: (batch_size, num_concepts)
         """
-        num_noninterv_concepts = concepts_mask.shape[1] - concepts_mask.sum(1)[0]
+        num_noninterv_concepts = int(concepts_mask.shape[1] - concepts_mask.sum(1)[0])
         interv_indices = torch.randint(
             low=0,
             high=num_noninterv_concepts,
